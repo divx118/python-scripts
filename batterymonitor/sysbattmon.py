@@ -22,16 +22,17 @@ ONLINE_PATH = args.online_path
 CAPSTR_ARRAY = ["0-5","6-9","10-19","20-29","30-41","42-53","54-65","66-77","78-89","90-100"]
 STATUS, ONLINE = commands.getstatusoutput("cat " + ONLINE_PATH)
 PREV_ONLINE = bool(int(ONLINE))
+ICON_PATH = "/usr/local/share/sysbattmon/icons/"
 #Create notification, so we can later update and show it when needed.
 Notify.init ("Batter Monitor")
-Notice = Notify.Notification.new ("Battery Monitor","empty","/usr/local/share/battmon/icons/battery_error.png")
+Notice = Notify.Notification.new ("Battery Monitor","empty",ICON_PATH + "battery_error.png")
 	
 class CheckBattery:
     def __init__(self):
         self.ind = appindicator.Indicator.new_with_path("battery-monitor",
                                            "battery_discharging_90-100",
                                            appindicator.IndicatorCategory.APPLICATION_STATUS,
-                                           "/usr/local/share/battmon/icons/")
+                                           ICON_PATH)
         self.ind.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.ind.set_attention_icon("new-messages-red")
         self.menu_setup()
