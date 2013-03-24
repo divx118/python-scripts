@@ -54,6 +54,13 @@ class ArchosPowerManager:
         self.cap_item.show()
         self.menu.append(self.cap_item)
         self.blue_item = Gtk.CheckMenuItem("Bluetooth on/off")
+        status, act = commands.getstatusoutput("cat " + BLUETOOTH_PATH)
+        if bool(int(act)):
+	  self.blue_item.set_active(True)
+	  self.blue_item.set_label("Bluetooth Off")
+	else:
+	  self.blue_item.set_active(False)
+	  self.blue_item.set_label("Bluetooth On")
         self.blue_item.connect("activate", self.control_bluetooth)
         self.blue_item.show()
         self.menu.append(self.blue_item)
