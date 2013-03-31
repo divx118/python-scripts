@@ -49,6 +49,7 @@ class ArchosPowerManager:
         self.ind.set_menu(self.menu)
         
     def menu_setup(self):
+	# Create dropdown menu
         self.menu = Gtk.Menu()
         self.cap_item = Gtk.MenuItem("Capacity = ")
         self.cap_item.show()
@@ -69,8 +70,16 @@ class ArchosPowerManager:
         self.control_item.connect("activate", self.window_adjust)
         self.control_item.show()
         self.menu.append(self.control_item)
+        self.reboot_item = Gtk.MenuItem("Reboot")
+        self.reboot_item.connect("activate", self.show_dialog,"Are you sure you want to Reboot","reboot")
+        self.reboot_item.show()
+        self.menu.append(self.reboot_item)
+        self.shutdown_item = Gtk.MenuItem("Shutdown")
+        self.shutdown_item.connect("activate", self.show_dialog,"Are you sure you want to Shutdown","shutdown now")
+        self.shutdown_item.show()
+        self.menu.append(self.shutdown_item)
         self.quit_item = Gtk.MenuItem("Quit")
-        self.quit_item.connect("activate", self.quit)
+        self.quit_item.connect("activate", self.show_dialog,"Are you sure you want to Quit\nArchos-power-manager","quit")
         self.quit_item.show()
         self.menu.append(self.quit_item)
 
@@ -80,9 +89,30 @@ class ArchosPowerManager:
         
         Gtk.main()
 
-    def quit(self, widget):
+    def quit(self):
         sys.exit(0)
+        
+        
+    def show_dialog(self,widget,message,command):
+	powerdialog = Gtk.Dialog()
+        powerdialog.set_default_size(300, 100)
+        label = Gtk.Label(message)
+        powerdialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        box = powerdialog.get_content_area()
+        box.add(label)
+        powerdialog.show_all()
+        response = powerdialog.run()
+	if response == Gtk.ResponseType.OK:
+            print "The OK button was clicked we are going to "+command
+            if command == "quit":
+	      self.quit()
+	    return_code = subprocess.call(command, shell=True)
+        elif response == Gtk.ResponseType.CANCEL:
+            print "The Cancel button was clicked"
 
+        powerdialog.destroy()
+        
     def check_bat(self):
 	global PREV_ONLINE
 	online, capacity = self.battery_checker(ONLINE_PATH,CAP_PATH)
